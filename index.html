@@ -60,6 +60,7 @@
             font-weight: 900;
             background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             padding: 10px 20px;
             border: 2px solid var(--glass-border);
@@ -94,6 +95,7 @@
             margin-bottom: 10px;
             background: linear-gradient(to bottom, #fff, #94a3b8);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -354,11 +356,6 @@
             cursor: not-allowed;
         }
 
-        /* --- LOGIN SPECIFIC --- */
-        #login-overlay {
-            z-index: 2000;
-        }
-
         /* --- SPIN ANIMATION --- */
         @keyframes spin {
             to {
@@ -373,54 +370,10 @@
 </head>
 
 <body>
-    <!-- TELA DE LOGIN -->
-    <div id="login-overlay" class="modal-overlay active">
-        <div class="modal-box">
-            <h2 id="login-title" class="modal-title">Acesso Restrito</h2>
-            <div id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 16px; display: none;">
-            </div>
-
-            <div id="register-fields" style="display: none;">
-                <div class="input-group">
-                    <label class="input-label">Nome Completo</label>
-                    <input type="text" id="name-input" class="modal-input" placeholder="Seu nome">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">E-mail</label>
-                <input type="email" id="email-input" class="modal-input" placeholder="seu@email.com">
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Senha</label>
-                <input type="password" id="password-input" class="modal-input" placeholder="••••••••">
-            </div>
-
-            <button id="login-btn" class="modal-btn">Entrar no Sistema</button>
-            <button id="register-btn" class="modal-btn" style="display: none; background: var(--success);">
-                Solicitar Acesso
-            </button>
-
-            <div style="margin-top: 24px; text-align: center;">
-                <a href="#" id="toggle-register"
-                    style="color: var(--primary-blue); text-decoration: none; font-size: 0.9rem; font-weight: 600;">
-                    Não tem conta? Solicitar Acesso
-                </a>
-            </div>
-        </div>
-    </div>
-
     <header>
         <div class="top-nav">
             <button onclick="window.location.href='/hub'" class="nav-btn nav-btn-primary">
                 Voltar ao Portal
-            </button>
-            <button id="admin-btn" class="nav-btn" style="display: none;">
-                Painel Admin
-            </button>
-            <button id="logout-btn" class="nav-btn" style="opacity: 0.7;">
-                Sair
             </button>
         </div>
 
@@ -458,20 +411,6 @@
         </div>
     </div>
 
-    <!-- ADMIN PANEL -->
-    <div id="admin-overlay" class="modal-overlay"
-        style="display: none; flex-direction: column; padding: 40px; overflow-y: auto;">
-        <div style="width: 100%; max-width: 800px; margin: 0 auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                <h2 class="modal-title" style="margin-bottom: 0;">Aprovações Pendentes</h2>
-                <button id="close-admin-btn" class="nav-btn">Fechar Painel</button>
-            </div>
-            <div id="users-list" style="display: flex; flex-direction: column; gap: 16px;">
-                <!-- Carregado via JS -->
-            </div>
-        </div>
-    </div>
-
     <script>
         // ================================================================
         // URL DO BACKEND — altere para a URL do Railway após deploy
@@ -481,155 +420,6 @@
         const { jsPDF } = window.jspdf;
         const dropZone = document.getElementById('drop-zone');
         const taskQueue = document.getElementById('task-queue');
-
-        // --- AUTH STATE ---
-        let authToken = localStorage.getItem('auth_token') || null;
-        let currentUser = null;
-
-        // --- UI ELEMENTS ---
-        const loginOverlay = document.getElementById('login-overlay');
-        const loginTitle = document.getElementById('login-title');
-        const emailInput = document.getElementById('email-input');
-        const passwordInput = document.getElementById('password-input');
-        const nameInput = document.getElementById('name-input');
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        const toggleRegisterBtn = document.getElementById('toggle-register');
-        const loginError = document.getElementById('login-error');
-        const logoutBtn = document.getElementById('logout-btn');
-        const adminBtn = document.getElementById('admin-btn');
-        const adminOverlay = document.getElementById('admin-overlay');
-        const closeAdminBtn = document.getElementById('close-admin-btn');
-        const usersList = document.getElementById('users-list');
-
-        let isRegisterMode = false;
-
-        // --- AUTO LOGIN (verificar token salvo) ---
-        async function tryAutoLogin() {
-            if (!authToken) return;
-            try {
-                const res = await fetch(`${API_URL}/api/auth/me`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    currentUser = data.user;
-                    onLoginSuccess();
-                } else {
-                    localStorage.removeItem('auth_token');
-                    authToken = null;
-                }
-            } catch {
-                // Backend offline — não desloga, mantém UI de login
-            }
-        }
-        tryAutoLogin();
-
-        // --- TOGGLE LOGIN / REGISTER ---
-        toggleRegisterBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            isRegisterMode = !isRegisterMode;
-            if (isRegisterMode) {
-                loginTitle.innerText = 'Nova Conta';
-                document.getElementById('register-fields').style.display = 'block';
-                loginBtn.style.display = 'none';
-                registerBtn.style.display = 'block';
-                toggleRegisterBtn.innerText = 'Já tem conta? Entrar';
-            } else {
-                loginTitle.innerText = 'Acesso Restrito';
-                document.getElementById('register-fields').style.display = 'none';
-                loginBtn.style.display = 'block';
-                registerBtn.style.display = 'none';
-                toggleRegisterBtn.innerText = 'Não tem conta? Solicitar Acesso';
-            }
-            loginError.style.display = 'none';
-        });
-
-        function showLoginError(msg, isSuccess = false) {
-            loginError.innerText = msg;
-            loginError.style.display = 'block';
-            loginError.style.color = isSuccess ? 'var(--success)' : 'var(--danger)';
-        }
-
-        function onLoginSuccess() {
-            loginOverlay.classList.remove('active');
-            if (currentUser.isAdmin) adminBtn.style.display = 'flex';
-        }
-
-        // --- LOGIN ---
-        loginBtn.addEventListener('click', async () => {
-            const email = emailInput.value;
-            const pass = passwordInput.value;
-            if (!email || !pass) return showLoginError('Preencha os campos.');
-
-            loginBtn.disabled = true;
-            loginBtn.innerText = 'Autenticando...';
-
-            try {
-                const res = await fetch(`${API_URL}/api/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password: pass })
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    authToken = data.token;
-                    currentUser = data.user;
-                    localStorage.setItem('auth_token', authToken);
-                    onLoginSuccess();
-                } else {
-                    showLoginError(data.error || 'Erro ao fazer login.');
-                }
-            } catch {
-                showLoginError('Servidor offline. Tente mais tarde.');
-            }
-
-            loginBtn.disabled = false;
-            loginBtn.innerText = 'Entrar no Sistema';
-        });
-
-        // --- REGISTER ---
-        registerBtn.addEventListener('click', async () => {
-            const name = nameInput.value;
-            const email = emailInput.value;
-            const pass = passwordInput.value;
-
-            if (!name || !email || !pass) return showLoginError('Preencha tudo.');
-
-            registerBtn.disabled = true;
-            registerBtn.innerText = 'Enviando...';
-
-            try {
-                const res = await fetch(`${API_URL}/api/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password: pass })
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    toggleRegisterBtn.click();
-                    showLoginError('Solicitação enviada com sucesso! Aguarde aprovação.', true);
-                } else {
-                    showLoginError(data.error || 'Erro ao cadastrar.');
-                }
-            } catch {
-                showLoginError('Servidor offline. Tente mais tarde.');
-            }
-
-            registerBtn.disabled = false;
-            registerBtn.innerText = 'Solicitar Acesso';
-        });
-
-        // --- LOGOUT ---
-        logoutBtn.addEventListener('click', () => {
-            authToken = null;
-            currentUser = null;
-            localStorage.removeItem('auth_token');
-            loginOverlay.classList.add('active');
-            adminBtn.style.display = 'none';
-        });
 
         // --- DROP ZONE LOGIC ---
         dropZone.addEventListener('dragover', (e) => {
@@ -829,65 +619,6 @@
                 btn.addEventListener('click', onConfirm);
             });
         }
-
-        // --- ADMIN PANEL LOGIC ---
-        adminBtn.addEventListener('click', () => {
-            adminOverlay.classList.add('active');
-            adminOverlay.style.display = 'flex';
-            loadUsers();
-        });
-        closeAdminBtn.addEventListener('click', () => {
-            adminOverlay.classList.remove('active');
-            setTimeout(() => adminOverlay.style.display = 'none', 300);
-        });
-
-        async function loadUsers() {
-            try {
-                const res = await fetch(`${API_URL}/api/admin/users`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                const data = await res.json();
-
-                if (!res.ok) return;
-
-                usersList.innerHTML = '';
-                data.users.forEach(u => {
-                    const div = document.createElement('div');
-                    div.style.cssText = 'background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;';
-                    div.innerHTML = `
-                        <div>
-                            <div style="font-weight: 600;">${u.name || 'Sem Nome'}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-dim);">${u.email}</div>
-                            <div style="font-size: 0.7rem; margin-top: 4px; color: ${u.status === 'approved' ? 'var(--success)' : 'var(--warning)'}; text-transform: uppercase; font-weight: 800;">${u.status}</div>
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            ${u.status !== 'approved' ? `<button onclick="updateStatus(${u.id}, 'approved')" class="nav-btn nav-btn-primary" style="padding: 6px 12px; font-size: 0.75rem;">Aprovar</button>` : ''}
-                            ${u.status !== 'rejected' ? `<button onclick="updateStatus(${u.id}, 'rejected')" class="nav-btn" style="padding: 6px 12px; font-size: 0.75rem; color: var(--danger); border-color: var(--danger);">Recusar</button>` : ''}
-                        </div>
-                    `;
-                    usersList.appendChild(div);
-                });
-            } catch {
-                usersList.innerHTML = '<p style="color: var(--danger);">Erro ao carregar usuários.</p>';
-            }
-        }
-
-        window.updateStatus = async (id, status) => {
-            try {
-                await fetch(`${API_URL}/api/admin/users/${id}/status`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify({ status })
-                });
-                loadUsers();
-            } catch {
-                alert('Erro ao atualizar status.');
-            }
-        };
-
     </script>
 </body>
 
