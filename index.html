@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        /* --- DESIGN DIRECTION: GLASSMORPHISM INDUSTRIAL --- */
         :root {
             --bg-dark: #0a0a0c;
             --glass-bg: rgba(255, 255, 255, 0.03);
@@ -24,11 +23,7 @@
             --warning: #f59e0b;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Outfit', sans-serif;
@@ -44,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* --- MODERN HEADER --- */
         header {
             width: 100%;
             max-width: 1000px;
@@ -99,7 +93,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* --- TOP BUTTONS --- */
         .top-nav {
             position: absolute;
             top: 20px;
@@ -140,14 +133,12 @@
             border-color: var(--primary-blue);
         }
 
-        /* --- MAIN CONTAINER --- */
         .main-container {
             width: 100%;
             max-width: 800px;
             padding: 0 20px 100px;
         }
 
-        /* --- DROP ZONE --- */
         #drop-zone {
             width: 100%;
             min-height: 320px;
@@ -187,35 +178,13 @@
             transform: scale(1.01);
         }
 
-        #drop-zone.dragover::before {
-            opacity: 0.05;
-        }
+        #drop-zone.dragover::before { opacity: 0.05; }
 
-        .drop-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
+        .drop-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.5; }
+        .drop-text { font-size: 1.25rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+        .drop-subtext { font-size: 0.9rem; color: var(--text-dim); }
 
-        .drop-text {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
-
-        .drop-subtext {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-        }
-
-        /* --- TASK QUEUE --- */
-        #task-queue {
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        #task-queue { margin-top: 40px; display: flex; flex-direction: column; gap: 16px; }
 
         .task-item {
             background: var(--glass-bg);
@@ -230,15 +199,8 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .task-item.completed {
@@ -246,18 +208,9 @@
             background: rgba(16, 185, 129, 0.02);
         }
 
-        .task-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 4px;
-        }
+        .task-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 4px; }
+        .task-status { font-size: 0.85rem; color: var(--text-dim); }
 
-        .task-status {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-        }
-
-        /* --- MODALS --- */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -272,10 +225,7 @@
             transition: all 0.3s;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal-box {
             background: #111114;
@@ -289,20 +239,11 @@
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .modal-overlay.active .modal-box {
-            transform: scale(1);
-        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
 
-        .modal-title {
-            font-size: 1.75rem;
-            font-weight: 900;
-            margin-bottom: 24px;
-            letter-spacing: -0.02em;
-        }
+        .modal-title { font-size: 1.75rem; font-weight: 900; margin-bottom: 24px; letter-spacing: -0.02em; }
 
-        .input-group {
-            margin-bottom: 24px;
-        }
+        .input-group { margin-bottom: 24px; }
 
         .input-label {
             display: block;
@@ -346,33 +287,52 @@
             transition: all 0.2s;
         }
 
-        .modal-btn:hover:not(:disabled) {
-            filter: brightness(1.1);
-            transform: translateY(-1px);
-        }
+        .modal-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+        .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .modal-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* --- SPIN ANIMATION --- */
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .spinning {
-            animation: spin 1s linear infinite;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinning { animation: spin 1s linear infinite; }
     </style>
 </head>
 
 <body>
+
+<!-- CATRACA: roda antes de renderizar qualquer coisa -->
+<script>
+    (async function () {
+        const HUB_URL = 'https://hub-sistemas-production.up.railway.app';
+        const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3001'
+            : 'https://backendconversor-production.up.railway.app';
+
+        const params = new URLSearchParams(window.location.search);
+        const tokenFromUrl = params.get('token');
+        if (tokenFromUrl) {
+            localStorage.setItem('hub_token', tokenFromUrl);
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+
+        const token = localStorage.getItem('hub_token');
+        if (!token) {
+            window.location.href = HUB_URL;
+            return;
+        }
+
+        try {
+            const res = await fetch(BACKEND + '/api/auth/validate', {
+                headers: { Authorization: 'Bearer ' + token }
+            });
+            if (!res.ok) throw new Error('invalido');
+        } catch (e) {
+            localStorage.removeItem('hub_token');
+            window.location.href = HUB_URL;
+        }
+    })();
+</script>
+
     <header>
         <div class="top-nav">
-            <button onclick="window.location.href='/hub'" class="nav-btn nav-btn-primary">
+            <button onclick="window.location.href='https://hub-sistemas-production.up.railway.app'" class="nav-btn nav-btn-primary">
                 Voltar ao Portal
             </button>
         </div>
@@ -387,8 +347,7 @@
             <div class="drop-icon">📂</div>
             <div class="drop-text">Arraste suas imagens aqui</div>
             <div class="drop-subtext">Ou clique para selecionar arquivos do computador</div>
-            <p
-                style="margin-top: 20px; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em;">
+            <p style="margin-top: 20px; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em;">
                 Suporta múltiplos lotes em paralelo
             </p>
         </div>
@@ -412,26 +371,17 @@
     </div>
 
     <script>
-        // ================================================================
-        // URL DO BACKEND — altere para a URL do Railway após deploy
-        // ================================================================
-        const API_URL = 'http://localhost:3001';
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3001'
+            : 'https://backendconversor-production.up.railway.app';
 
         const { jsPDF } = window.jspdf;
         const dropZone = document.getElementById('drop-zone');
         const taskQueue = document.getElementById('task-queue');
 
-        // --- DROP ZONE LOGIC ---
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            handleFiles(e.dataTransfer.files);
-        });
+        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
         dropZone.addEventListener('click', () => {
             const input = document.createElement('input');
             input.type = 'file';
@@ -450,19 +400,13 @@
             const taskId = Date.now();
             const taskItem = document.createElement('div');
             taskItem.className = 'task-item';
-            taskItem.id = `task-${taskId}`;
-            taskItem.innerHTML = `
-                <div>
-                    <div class="task-title">NS ${ns}</div>
-                    <div class="task-status" id="status-${taskId}">Preparando ${files.length} imagens...</div>
-                </div>
-                <div class="spinning" id="icon-${taskId}">⏳</div>
-            `;
+            taskItem.id = 'task-' + taskId;
+            taskItem.innerHTML = '<div><div class="task-title">NS ' + ns + '</div><div class="task-status" id="status-' + taskId + '">Preparando ' + files.length + ' imagens...</div></div><div class="spinning" id="icon-' + taskId + '">⏳</div>';
             taskQueue.prepend(taskItem);
 
             try {
-                const statusText = document.getElementById(`status-${taskId}`);
-                const statusIcon = document.getElementById(`icon-${taskId}`);
+                const statusText = document.getElementById('status-' + taskId);
+                const statusIcon = document.getElementById('icon-' + taskId);
 
                 const limit = 150;
                 const batches = [];
@@ -471,20 +415,16 @@
                 }
 
                 for (let i = 0; i < batches.length; i++) {
-                    let currentFileName = batches.length > 1 ? `Foto_${ns}_Parte${i + 1}.pdf` : `Foto_${ns}.pdf`;
-                    statusText.innerText = `Gerando ${currentFileName} (${i + 1}/${batches.length})...`;
-
-                    statusIcon.innerText = "⚙️";
-                    statusIcon.classList.add("spinning");
-
+                    let currentFileName = batches.length > 1 ? 'Foto_' + ns + '_Parte' + (i + 1) + '.pdf' : 'Foto_' + ns + '.pdf';
+                    statusText.innerText = 'Gerando ' + currentFileName + ' (' + (i + 1) + '/' + batches.length + ')...';
+                    statusIcon.innerText = '⚙️';
+                    statusIcon.classList.add('spinning');
                     await new Promise(resolve => setTimeout(resolve, 100));
-
                     await createPDF(batches[i], currentFileName, ns, files.length);
                 }
 
                 taskItem.classList.add('completed');
-                statusText.innerText = `Concluído com sucesso!`;
-
+                statusText.innerText = 'Concluído com sucesso!';
                 statusIcon.innerHTML = '✅';
                 statusIcon.classList.remove('spinning');
 
@@ -494,10 +434,8 @@
                 }, 5000);
 
             } catch (err) {
-                const statusText = document.getElementById(`status-${taskId}`);
-                const statusIcon = document.getElementById(`icon-${taskId}`);
-                statusText.innerText = 'Erro ao processar.';
-                statusIcon.innerHTML = '❌';
+                document.getElementById('status-' + taskId).innerText = 'Erro ao processar.';
+                document.getElementById('icon-' + taskId).innerHTML = '❌';
             }
         }
 
@@ -507,7 +445,6 @@
             const margin = 10;
             const contentWidth = 210 - (margin * 3);
             const contentHeight = 297 - (margin * 3);
-
             const cellWidth = contentWidth / 2;
             const cellHeight = contentHeight / 2;
 
@@ -519,18 +456,14 @@
             ];
 
             for (let i = 0; i < imageFiles.length; i++) {
-                if (i > 0 && i % 4 === 0) {
-                    pdf.addPage();
-                }
+                if (i > 0 && i % 4 === 0) pdf.addPage();
 
                 const positionIndex = i % 4;
                 const imgData = await loadImage(imageFiles[i]);
-
                 const imgRatio = imgData.width / imgData.height;
                 const cellRatio = cellWidth / cellHeight;
 
                 let finalWidth, finalHeight;
-
                 if (imgRatio > cellRatio) {
                     finalWidth = cellWidth;
                     finalHeight = cellWidth / imgRatio;
@@ -547,12 +480,11 @@
 
             pdf.save(fileName);
 
-            // --- HOOK DE AUDITORIA: registra no backend (silencioso) ---
-            fetch(`${API_URL}/api/salvar`, {
+            fetch(API_URL + '/api/salvar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dados: `NS ${ns}: ${totalFiles} foto(s) → ${fileName}` })
-            }).catch(() => {}); // silencioso — não bloqueia o fluxo
+                body: JSON.stringify({ dados: 'NS ' + ns + ': ' + totalFiles + ' foto(s) → ' + fileName })
+            }).catch(() => {});
         }
 
         function loadImage(file) {
@@ -576,12 +508,7 @@
                             ctx.drawImage(img, 0, 0, img.width, img.height);
                         }
 
-                        resolve({
-                            src: canvas.toDataURL('image/jpeg', 0.9),
-                            type: 'JPEG',
-                            width: canvas.width,
-                            height: canvas.height
-                        });
+                        resolve({ src: canvas.toDataURL('image/jpeg', 0.9), type: 'JPEG', width: canvas.width, height: canvas.height });
                     };
                     img.onerror = reject;
                     img.src = e.target.result;
@@ -604,7 +531,7 @@
                 btn.disabled = true;
 
                 const onInput = (e) => {
-                    count.innerText = `${e.target.value.length}/10`;
+                    count.innerText = e.target.value.length + '/10';
                     btn.disabled = e.target.value.length !== 10;
                 };
 
