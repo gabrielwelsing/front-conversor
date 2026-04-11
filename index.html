@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,26 +10,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0a0a0c;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
             --primary-blue: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.5);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            background-color: var(--bg);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -38,7 +31,6 @@
             align-items: center;
             overflow-x: hidden;
         }
-
         header {
             width: 100%;
             max-width: 1000px;
@@ -48,51 +40,26 @@
             align-items: center;
             position: relative;
         }
-
         .logo-box {
             font-size: 2.5rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #1e293b;
             padding: 10px 20px;
-            border: 2px solid var(--glass-border);
+            border: 2px solid var(--border);
             border-radius: 12px;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            background: var(--surface);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             letter-spacing: 4px;
             margin-bottom: 20px;
-            position: relative;
         }
-
-        .logo-box::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 12px;
-            padding: 2px;
-            background: linear-gradient(135deg, var(--primary-blue), transparent, var(--success));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
-
         .main-title {
             font-size: 2.5rem;
             font-weight: 900;
             letter-spacing: -0.02em;
             text-align: center;
             margin-bottom: 10px;
-            background: linear-gradient(to bottom, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-main);
         }
-
         .top-nav {
             position: absolute;
             top: 20px;
@@ -100,50 +67,45 @@
             display: flex;
             gap: 12px;
         }
-
         .nav-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
             padding: 8px 16px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(8px);
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-
         .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: var(--text-main);
             transform: translateY(-1px);
         }
-
         .nav-btn-primary {
             border-color: var(--primary-blue);
             color: var(--primary-blue);
         }
-
         .nav-btn-primary:hover {
-            background: rgba(59, 130, 246, 0.1);
+            background: #eff6ff;
             border-color: var(--primary-blue);
+            color: var(--primary-blue);
         }
-
         .main-container {
             width: 100%;
             max-width: 800px;
             padding: 0 20px 100px;
         }
-
         #drop-zone {
             width: 100%;
             min-height: 320px;
-            background: var(--glass-bg);
-            border: 2px dashed var(--glass-border);
+            background: var(--surface);
+            border: 2px dashed var(--border);
             border-radius: 24px;
             display: flex;
             flex-direction: column;
@@ -152,70 +114,47 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-
-        #drop-zone::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, var(--primary-blue), transparent);
-            opacity: 0;
-            transition: opacity 0.4s;
-            pointer-events: none;
-        }
-
         #drop-zone:hover {
             border-color: var(--primary-blue);
-            box-shadow: 0 0 40px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.08);
         }
-
         #drop-zone.dragover {
             border-color: var(--primary-blue);
-            background: rgba(59, 130, 246, 0.05);
+            background: #eff6ff;
             transform: scale(1.01);
         }
-
-        #drop-zone.dragover::before { opacity: 0.05; }
-
-        .drop-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.5; }
+        .drop-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.4; }
         .drop-text { font-size: 1.25rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
         .drop-subtext { font-size: 0.9rem; color: var(--text-dim); }
-
         #task-queue { margin-top: 40px; display: flex; flex-direction: column; gap: 16px; }
-
         .task-item {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(8px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
             animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .task-item.completed {
-            border-color: rgba(16, 185, 129, 0.3);
-            background: rgba(16, 185, 129, 0.02);
+            border-color: rgba(16, 185, 129, 0.4);
+            background: #f0fdf4;
         }
-
-        .task-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 4px; }
+        .task-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 4px; color: var(--text-main); }
         .task-status { font-size: 0.85rem; color: var(--text-dim); }
-
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -224,27 +163,21 @@
             visibility: hidden;
             transition: all 0.3s;
         }
-
         .modal-overlay.active { opacity: 1; visibility: visible; }
-
         .modal-box {
-            background: #111114;
-            border: 1px solid var(--glass-border);
+            background: #ffffff;
+            border: 1px solid var(--border);
             padding: 40px;
             border-radius: 24px;
             width: 90%;
             max-width: 440px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
             transform: scale(0.95);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
         .modal-overlay.active .modal-box { transform: scale(1); }
-
-        .modal-title { font-size: 1.75rem; font-weight: 900; margin-bottom: 24px; letter-spacing: -0.02em; }
-
+        .modal-title { font-size: 1.75rem; font-weight: 900; margin-bottom: 24px; letter-spacing: -0.02em; color: var(--text-main); }
         .input-group { margin-bottom: 24px; }
-
         .input-label {
             display: block;
             font-size: 0.85rem;
@@ -254,26 +187,23 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-
         .modal-input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
+            background: #f8fafc;
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 14px 18px;
-            color: #fff;
+            color: var(--text-main);
             font-size: 1rem;
             font-family: inherit;
             transition: all 0.2s;
         }
-
         .modal-input:focus {
             outline: none;
             border-color: var(--primary-blue);
-            background: rgba(255, 255, 255, 0.08);
+            background: #eff6ff;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
-
         .modal-btn {
             width: 100%;
             background: var(--primary-blue);
@@ -286,17 +216,13 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .modal-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
         .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
         @keyframes spin { to { transform: rotate(360deg); } }
         .spinning { animation: spin 1s linear infinite; }
     </style>
 </head>
-
 <body>
-
 <!-- CATRACA: roda antes de renderizar qualquer coisa -->
 <script>
     (async function () {
@@ -304,20 +230,17 @@
         const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:3001'
             : 'https://backendconversor-production.up.railway.app';
-
         const params = new URLSearchParams(window.location.search);
         const tokenFromUrl = params.get('token');
         if (tokenFromUrl) {
             localStorage.setItem('hub_token', tokenFromUrl);
             window.history.replaceState({}, '', window.location.pathname);
         }
-
         const token = localStorage.getItem('hub_token');
         if (!token) {
             window.location.href = HUB_URL;
             return;
         }
-
         try {
             const res = await fetch(BACKEND + '/api/auth/validate', {
                 headers: { Authorization: 'Bearer ' + token }
@@ -329,19 +252,19 @@
         }
     })();
 </script>
-
     <header>
         <div class="top-nav">
+            <button onclick="window.open('https://www.sup-ia.com', '_blank')" class="nav-btn">
+                🌐 Site inicial
+            </button>
             <button onclick="window.location.href='https://www.hub.sup-ia.com'" class="nav-btn nav-btn-primary">
-                Voltar ao Portal
+                ◀ Hub
             </button>
         </div>
-
         <div class="logo-box">PRO</div>
         <h1 class="main-title">Fotos para PDF</h1>
         <p style="color: var(--text-dim); font-weight: 400;">Processamento inteligente de croquis e fotos</p>
     </header>
-
     <main class="main-container">
         <div id="drop-zone">
             <div class="drop-icon">📂</div>
@@ -351,10 +274,8 @@
                 Suporta múltiplos lotes em paralelo
             </p>
         </div>
-
         <div id="task-queue"></div>
     </main>
-
     <!-- NS MODAL -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-box">
@@ -369,16 +290,13 @@
             <button id="confirm-btn" class="modal-btn" disabled>Confirmar NS e Gerar PDF</button>
         </div>
     </div>
-
     <script>
         const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:3001'
             : 'https://backendconversor-production.up.railway.app';
-
         const { jsPDF } = window.jspdf;
         const dropZone = document.getElementById('drop-zone');
         const taskQueue = document.getElementById('task-queue');
-
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
         dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
@@ -390,30 +308,25 @@
             input.onchange = (e) => handleFiles(e.target.files);
             input.click();
         });
-
         async function handleFiles(files) {
             files = Array.from(files).filter(file => file.type.startsWith('image/'));
             if (files.length === 0) return;
             const ns = await getNSFromModal();
             if (!ns) return;
-
             const taskId = Date.now();
             const taskItem = document.createElement('div');
             taskItem.className = 'task-item';
             taskItem.id = 'task-' + taskId;
             taskItem.innerHTML = '<div><div class="task-title">NS ' + ns + '</div><div class="task-status" id="status-' + taskId + '">Preparando ' + files.length + ' imagens...</div></div><div class="spinning" id="icon-' + taskId + '">⏳</div>';
             taskQueue.prepend(taskItem);
-
             try {
                 const statusText = document.getElementById('status-' + taskId);
                 const statusIcon = document.getElementById('icon-' + taskId);
-
                 const limit = 150;
                 const batches = [];
                 for (let i = 0; i < files.length; i += limit) {
                     batches.push(files.slice(i, i + limit));
                 }
-
                 for (let i = 0; i < batches.length; i++) {
                     let currentFileName = batches.length > 1 ? 'Foto_' + ns + '_Parte' + (i + 1) + '.pdf' : 'Foto_' + ns + '.pdf';
                     statusText.innerText = 'Gerando ' + currentFileName + ' (' + (i + 1) + '/' + batches.length + ')...';
@@ -422,47 +335,38 @@
                     await new Promise(resolve => setTimeout(resolve, 100));
                     await createPDF(batches[i], currentFileName, ns, files.length);
                 }
-
                 taskItem.classList.add('completed');
                 statusText.innerText = 'Concluído com sucesso!';
                 statusIcon.innerHTML = '✅';
                 statusIcon.classList.remove('spinning');
-
                 setTimeout(() => {
                     taskItem.style.opacity = '0';
                     setTimeout(() => taskItem.remove(), 500);
                 }, 5000);
-
             } catch (err) {
                 document.getElementById('status-' + taskId).innerText = 'Erro ao processar.';
                 document.getElementById('icon-' + taskId).innerHTML = '❌';
             }
         }
-
         async function createPDF(imageFiles, fileName, ns, totalFiles) {
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
             const margin = 10;
             const contentWidth = 210 - (margin * 3);
             const contentHeight = 297 - (margin * 3);
             const cellWidth = contentWidth / 2;
             const cellHeight = contentHeight / 2;
-
             const positions = [
                 { x: margin, y: margin },
                 { x: margin * 2 + cellWidth, y: margin },
                 { x: margin, y: margin * 2 + cellHeight },
                 { x: margin * 2 + cellWidth, y: margin * 2 + cellHeight }
             ];
-
             for (let i = 0; i < imageFiles.length; i++) {
                 if (i > 0 && i % 4 === 0) pdf.addPage();
-
                 const positionIndex = i % 4;
                 const imgData = await loadImage(imageFiles[i]);
                 const imgRatio = imgData.width / imgData.height;
                 const cellRatio = cellWidth / cellHeight;
-
                 let finalWidth, finalHeight;
                 if (imgRatio > cellRatio) {
                     finalWidth = cellWidth;
@@ -471,22 +375,17 @@
                     finalHeight = cellHeight;
                     finalWidth = cellHeight * imgRatio;
                 }
-
                 const xOffset = positions[positionIndex].x + ((cellWidth - finalWidth) / 2);
                 const yOffset = positions[positionIndex].y + ((cellHeight - finalHeight) / 2);
-
                 pdf.addImage(imgData.src, imgData.type, xOffset, yOffset, finalWidth, finalHeight);
             }
-
             pdf.save(fileName);
-
             fetch(API_URL + '/api/salvar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ dados: 'NS ' + ns + ': ' + totalFiles + ' foto(s) → ' + fileName })
             }).catch(() => {});
         }
-
         function loadImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -495,7 +394,6 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-
                         if (img.width > img.height) {
                             canvas.width = img.height;
                             canvas.height = img.width;
@@ -507,7 +405,6 @@
                             canvas.height = img.height;
                             ctx.drawImage(img, 0, 0, img.width, img.height);
                         }
-
                         resolve({ src: canvas.toDataURL('image/jpeg', 0.9), type: 'JPEG', width: canvas.width, height: canvas.height });
                     };
                     img.onerror = reject;
@@ -517,36 +414,30 @@
                 reader.readAsDataURL(file);
             });
         }
-
         function getNSFromModal() {
             return new Promise(resolve => {
                 const overlay = document.getElementById('modal-overlay');
                 const btn = document.getElementById('confirm-btn');
                 const input = document.getElementById('ns-input');
                 const count = document.getElementById('char-count');
-
                 overlay.classList.add('active');
                 input.value = '';
                 count.innerText = '0/10';
                 btn.disabled = true;
-
                 const onInput = (e) => {
                     count.innerText = e.target.value.length + '/10';
                     btn.disabled = e.target.value.length !== 10;
                 };
-
                 const onConfirm = () => {
                     overlay.classList.remove('active');
                     input.removeEventListener('input', onInput);
                     btn.removeEventListener('click', onConfirm);
                     resolve(input.value.toUpperCase());
                 };
-
                 input.addEventListener('input', onInput);
                 btn.addEventListener('click', onConfirm);
             });
         }
     </script>
 </body>
-
 </html>
